@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Exam-IQ • Mission 2026</title>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
@@ -548,11 +551,11 @@
 
       <!-- Search Bar -->
       <div class="search-container">
-        <input type="text" class="search" placeholder="टेस्ट या कैटेगरी खोजें..." />
+        <input type="text" class="search" id="searchInput" placeholder="टेस्ट या कैटेगरी खोजें..." />
       </div>
 
       <!-- Daily Test Card -->
-      <div class="daily-card">
+      <div class="daily-card" onclick="startDailyTest()">
         <div class="daily-icon"><i class="fas fa-sync-alt"></i></div>
         <div class="daily-title">Daily Test</div>
         <div class="daily-info">100 प्रश्न • सभी टॉपिक्स से</div>
@@ -561,11 +564,11 @@
 
       <!-- Quick Categories -->
       <div class="quick-categories">
-        <div class="category-chip active">Lucent GK</div>
-        <div class="category-chip">Jharkhand GK</div>
-        <div class="category-chip">Maths</div>
-        <div class="category-chip">Science</div>
-        <div class="category-chip">Polity</div>
+        <div class="category-chip active" onclick="filterCategory('Lucent GK')">Lucent GK</div>
+        <div class="category-chip" onclick="filterCategory('Jharkhand GK')">Jharkhand GK</div>
+        <div class="category-chip" onclick="filterCategory('Maths')">Maths</div>
+        <div class="category-chip" onclick="filterCategory('Science')">Science</div>
+        <div class="category-chip" onclick="filterCategory('Polity')">Polity</div>
       </div>
 
       <!-- Motivation Card -->
@@ -585,55 +588,19 @@
 
       <!-- Category Filter Chips -->
       <div class="filter-chips">
-        <div class="filter-chip active">All</div>
-        <div class="filter-chip">GK</div>
-        <div class="filter-chip">Maths</div>
-        <div class="filter-chip">Science</div>
-        <div class="filter-chip">Polity</div>
-        <div class="filter-chip">Geography</div>
+        <div class="filter-chip active" onclick="showAllTests()">All</div>
+        <div class="filter-chip" onclick="filterCategory('GK')">GK</div>
+        <div class="filter-chip" onclick="filterCategory('Maths')">Maths</div>
+        <div class="filter-chip" onclick="filterCategory('Science')">Science</div>
+        <div class="filter-chip" onclick="filterCategory('Polity')">Polity</div>
+        <div class="filter-chip" onclick="filterCategory('Geography')">Geography</div>
       </div>
 
       <!-- Featured Tests -->
       <div class="featured-section">
         <div class="section-title">Featured Tests</div>
-        <div class="test-item">
-          <div>
-            <div class="test-title">Daily Test</div>
-            <div class="test-details">
-              <span><i class="far fa-clock"></i> 90 प्रश्न • 30 मिनट</span>
-            </div>
-          </div>
-          <button class="start-test-btn">Start Test</button>
-        </div>
-        <div class="test-item">
-          <div>
-            <div class="test-title">Lucent GK - Set 1</div>
-            <div class="test-details">
-              <span><i class="far fa-clock"></i> 20 प्रश्न • 20 मिनट</span>
-              <span class="test-difficulty">Medium</span>
-            </div>
-          </div>
-          <button class="start-test-btn">Start Test</button>
-        </div>
-        <div class="test-item">
-          <div>
-            <div class="test-title">Maths Basic - Set 5</div>
-            <div class="test-details">
-              <span><i class="far fa-clock"></i> 20 प्रश्न • 20 मिनट</span>
-              <span class="test-difficulty">Medium</span>
-            </div>
-          </div>
-          <button class="start-test-btn">Start Test</button>
-        </div>
-        <div class="test-item">
-          <div>
-            <div class="test-title">Jharkhand GK - Set 3</div>
-            <div class="test-details">
-              <span><i class="far fa-clock"></i> 20 प्रश्न • 20 मिनट</span>
-              <span class="test-difficulty">Medium</span>
-            </div>
-          </div>
-          <button class="start-test-btn">Start Test</button>
+        <div id="featuredTestsList">
+          <!-- Will be filled by JavaScript -->
         </div>
       </div>
     </div>
@@ -650,38 +617,25 @@
       <!-- Score Card -->
       <div class="result-card">
         <div class="time-info">
-          <span><i class="far fa-clock"></i> समय : 16m 20s</span>
+          <span><i class="far fa-clock"></i> समय : <span id="resultTime">0m 0s</span></span>
         </div>
         <div class="score-ring">
           <div>
-            <div class="score-value">78</div>
-            <div class="score-total">/ 100</div>
+            <div class="score-value" id="scoreValue">0</div>
+            <div class="score-total">/ <span id="totalQuestions">0</span></div>
           </div>
         </div>
         <div class="accuracy-box">
-          <i class="fas fa-check-circle"></i> Accuracy: 78%
+          <i class="fas fa-check-circle"></i> Accuracy: <span id="accuracyPercent">0</span>%
         </div>
-        <button class="start-test-btn-result">Start Test</button>
+        <button class="start-test-btn-result" onclick="reAttemptTest()">Re-attempt</button>
       </div>
 
       <!-- Performance Snapshot -->
       <div class="performance-snapshot">
         <div class="section-title">Performance Snapshot</div>
-        <div class="snapshot-item">
-          <div class="snapshot-text">Random 50 Questions</div>
-          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-text">Random 100 Questions</div>
-          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-text">Wrong Questions Only</div>
-          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="snapshot-item">
-          <div class="snapshot-text">Accuracy < 50% Questions</div>
-          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
+        <div id="performanceSnapshot">
+          <!-- Will be filled by JavaScript -->
         </div>
       </div>
     </div>
@@ -708,19 +662,19 @@
       <!-- Stats Grid -->
       <div class="stats-grid">
         <div class="stat-item">
-          <div class="stat-number">354</div>
+          <div class="stat-number" id="totalAttempts">0</div>
           <div class="stat-label">प्रश्न प्रयास</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number">78%</div>
+          <div class="stat-number" id="correctCount">0</div>
           <div class="stat-label">Correct</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number">12</div>
-          <div class="stat-label">Draws</div>
+          <div class="stat-number" id="wrongCount">0</div>
+          <div class="stat-label">Wrong</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number">93</div>
+          <div class="stat-number" id="skippedCount">0</div>
           <div class="stat-label">Skipped</div>
         </div>
       </div>
@@ -734,7 +688,7 @@
         <ul class="section-list">
           <li class="section-item">
             <div class="section-item-text">Attempted Tests</div>
-            <div class="section-item-right">42</div>
+            <div class="section-item-right" id="attemptedTests">0</div>
           </li>
           <li class="section-item">
             <div class="section-item-text">Bookmarked Questions</div>
@@ -742,7 +696,7 @@
           </li>
           <li class="section-item">
             <div class="section-item-text">Wrong Questions</div>
-            <div class="section-item-right">18 Days</div>
+            <div class="section-item-right" id="wrongDays">0 Days</div>
           </li>
         </ul>
       </div>
@@ -823,6 +777,360 @@
   </div>
 
   <script>
+    // ===== FIREBASE INITIALIZATION =====
+    firebase.initializeApp({
+      apiKey: "AIzaSyAkLZnHOp2-jXMiNzhIwZE-Fgs6OEb89rw",
+      authDomain: "quiz-app-64a74.firebaseapp.com",
+      projectId: "quiz-app-64a74",
+      storageBucket: "quiz-app-64a74.firebasestorage.app",
+      messagingSenderId: "665162938804",
+      appId: "1:665162938804:web:2066494d51f97ec2561ae1"
+    });
+    const db = firebase.firestore();
+
+    // ===== GLOBAL VARIABLES =====
+    let allTests = [];
+    let currentTest = null;
+    let userAnswers = [];
+    let currentQuestionIndex = 0;
+    let timerInterval = null;
+    let timePerQuestion = 90;
+    let timeLeft = timePerQuestion;
+    let totalTimeUsed = 0;
+    let currentUser = {
+      uid: "user_123", // In real app, get from auth
+      name: "Piyush Bharti",
+      targetExam: "JPSC/JSLPS/SSC",
+      level: "Beginner"
+    };
+
+    // ===== USER STATS =====
+    let userStats = {
+      totalAttempts: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      skippedCount: 0,
+      attemptedTests: 0,
+      lastWrongDate: new Date(),
+      dailyGoal: 5
+    };
+
+    // ===== LOAD ALL TESTS FROM FIRESTORE =====
+    async function loadAllTests() {
+      try {
+        const snapshot = await db.collection('tests').get();
+        allTests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log("✅ Loaded", allTests.length, "tests");
+        renderHomeCategories();
+        renderFeaturedTests();
+        updateProfileStats();
+      } catch (e) {
+        console.error("❌ Load error:", e);
+        document.getElementById('featuredTestsList').innerHTML = `
+          <div style="text-align:center; padding:20px; color:#64748b;">
+            <i class="fas fa-exclamation-triangle"></i><br>
+            टेस्ट लोड नहीं हो सके।<br>
+            <button onclick="loadAllTests()" style="margin-top:10px; background:#3b82f6; color:white; border:none; padding:6px 12px; border-radius:8px; font-size:0.8rem;">
+              रीट्राई करें
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // ===== RENDER HOME CATEGORIES =====
+    function renderHomeCategories() {
+      const categories = [...new Set(allTests.map(t => t.category || 'अन्य'))];
+      const categoryChips = document.querySelectorAll('.category-chip');
+      categoryChips.forEach(chip => {
+        if (categories.includes(chip.textContent)) {
+          chip.style.display = 'inline-block';
+        } else {
+          chip.style.display = 'none';
+        }
+      });
+    }
+
+    // ===== RENDER FEATURED TESTS =====
+    function renderFeaturedTests() {
+      const featuredContainer = document.getElementById('featuredTestsList');
+      let html = '';
+
+      // Daily Test
+      html += `
+        <div class="test-item">
+          <div>
+            <div class="test-title">Daily Test</div>
+            <div class="test-details">
+              <span><i class="far fa-clock"></i> 90 प्रश्न • 30 मिनट</span>
+            </div>
+          </div>
+          <button class="start-test-btn" onclick="startDailyTest()">Start Test</button>
+        </div>
+      `;
+
+      // Top 3 tests by attempts
+      const sortedTests = [...allTests].sort((a, b) => {
+        return (b.attempts || 0) - (a.attempts || 0);
+      }).slice(0, 3);
+
+      sortedTests.forEach(test => {
+        const difficulty = test.difficulty || 'Medium';
+        html += `
+          <div class="test-item">
+            <div>
+              <div class="test-title">${test.title}</div>
+              <div class="test-details">
+                <span><i class="far fa-clock"></i> ${test.questions?.length || 0} प्रश्न • ${test.duration || 20} मिनट</span>
+                <span class="test-difficulty">${difficulty}</span>
+              </div>
+            </div>
+            <button class="start-test-btn" onclick="startTest('${test.id}')">Start Test</button>
+          </div>
+        `;
+      });
+
+      featuredContainer.innerHTML = html;
+    }
+
+    // ===== START DAILY TEST =====
+    async function startDailyTest() {
+      if (allTests.length === 0) {
+        alert("कोई टेस्ट उपलब्ध नहीं है!");
+        return;
+      }
+
+      let allQuestions = [];
+      allTests.forEach(test => {
+        if (test.questions && test.questions.length > 0) {
+          test.questions.forEach(q => {
+            allQuestions.push({ ...q, source: test.title });
+          });
+        }
+      });
+
+      if (allQuestions.length === 0) {
+        alert("कोई प्रश्न उपलब्ध नहीं है!");
+        return;
+      }
+
+      const totalToPick = Math.min(100, allQuestions.length);
+      const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+      const selectedQuestions = shuffled.slice(0, totalToPick);
+
+      const dailyTest = {
+        id: 'daily-test-' + Date.now(),
+        title: `Daily Challenge • ${new Date().toLocaleDateString('hi-IN')}`,
+        category: 'Daily Challenge',
+        questions: selectedQuestions,
+        duration: 120
+      };
+
+      currentTest = dailyTest;
+      currentQuestionIndex = 0;
+      userAnswers = Array(selectedQuestions.length).fill(null).map(() => ({ answer: null, locked: false }));
+      
+      showScreen('testScreen');
+      renderQuestion(currentQuestionIndex);
+    }
+
+    // ===== START TEST BY ID =====
+    function startTest(testId) {
+      const test = allTests.find(t => t.id === testId);
+      if (!test) {
+        alert("टेस्ट नहीं मिला!");
+        return;
+      }
+
+      currentTest = test;
+      currentQuestionIndex = 0;
+      
+      const draft = localStorage.getItem(`draft_${testId}`);
+      if (draft) {
+        const draftData = JSON.parse(draft);
+        if (confirm(`आपने पहले यह टेस्ट शुरू किया था। क्या आप पिछले उत्तरों के साथ जारी रखना चाहते हैं?`)) {
+          userAnswers = draftData.answers;
+        } else {
+          userAnswers = Array(currentTest.questions.length).fill(null).map(() => ({ answer: null, locked: false }));
+        }
+      } else {
+        userAnswers = Array(currentTest.questions.length).fill(null).map(() => ({ answer: null, locked: false }));
+      }
+      
+      showScreen('testScreen');
+      renderQuestion(currentQuestionIndex);
+    }
+
+    // ===== RENDER QUESTION =====
+    function renderQuestion(qIndex) {
+      currentQuestionIndex = qIndex;
+      const q = currentTest.questions[qIndex];
+      const total = currentTest.questions.length;
+      
+      document.getElementById('qNumber').textContent = qIndex + 1;
+      document.getElementById('questionText').textContent = q.q;
+      document.getElementById('progressFill').style.width = `${((qIndex + 1) / total) * 100}%`;
+      document.getElementById('testTitle').textContent = currentTest.title;
+      
+      document.getElementById('prevBtn').style.display = qIndex > 0 ? 'block' : 'none';
+      if (qIndex === total - 1) {
+        document.getElementById('nextBtn').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'block';
+      } else {
+        document.getElementById('nextBtn').style.display = 'block';
+        document.getElementById('submitBtn').style.display = 'none';
+      }
+      
+      const optionsContainer = document.getElementById('optionsGrid');
+      optionsContainer.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const letter = ['A', 'B', 'C', 'D'][i];
+        const userAns = userAnswers[qIndex];
+        let isSelected = false;
+        let isCorrect = false;
+        let showResult = false;
+
+        if (userAns.locked) {
+          showResult = true;
+          isSelected = (userAns.answer === i);
+          const correctIndex = ['A','B','C','D'].indexOf(q.correct);
+          isCorrect = (i === correctIndex);
+        }
+
+        let classes = 'option-card';
+        if (showResult) {
+          if (isCorrect) {
+            classes += ' correct';
+          } else if (isSelected) {
+            classes += ' incorrect';
+          }
+        } else if (userAns.answer === i) {
+          classes += ' selected';
+        }
+        
+        const optionCard = document.createElement('div');
+        optionCard.className = classes;
+        optionCard.innerHTML = `
+          <div class="option-letter">${letter}</div>
+          <div>${opt}</div>
+        `;
+        
+        if (!userAns.locked) {
+          optionCard.onclick = () => selectAnswer(qIndex, i);
+        }
+        
+        optionsContainer.appendChild(optionCard);
+      });
+      
+      localStorage.setItem(`draft_${currentTest.id}`, JSON.stringify({
+        answers: userAnswers,
+        qIndex: qIndex
+      }));
+      
+      if (timerInterval) clearInterval(timerInterval);
+      timeLeft = timePerQuestion;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          if (userAnswers[qIndex].answer === null) {
+            userAnswers[qIndex] = { answer: null, locked: true };
+          }
+          if (qIndex < total - 1) {
+            renderQuestion(qIndex + 1);
+          } else {
+            submitTest();
+          }
+        }
+      }, 1000);
+    }
+
+    // ===== SELECT ANSWER =====
+    function selectAnswer(qIndex, ansIndex) {
+      if (userAnswers[qIndex].locked) return;
+      userAnswers[qIndex] = { answer: ansIndex, locked: true };
+      renderQuestion(qIndex);
+    }
+
+    // ===== SUBMIT TEST =====
+    function submitTest() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        totalTimeUsed += (timePerQuestion - timeLeft);
+      }
+      
+      let correct = 0;
+      const total = currentTest.questions.length;
+      for (let i = 0; i < total; i++) {
+        const q = currentTest.questions[i];
+        const correctIndex = ['A','B','C','D'].indexOf(q.correct);
+        if (userAnswers[i].answer !== null && userAnswers[i].answer === correctIndex) {
+          correct++;
+        }
+      }
+      
+      // Update user stats
+      userStats.totalAttempts += total;
+      userStats.correctCount += correct;
+      userStats.wrongCount += (total - correct);
+      userStats.skippedCount += userAnswers.filter(a => a.answer === null).length;
+      userStats.attemptedTests += 1;
+      userStats.lastWrongDate = new Date();
+
+      // Save to localStorage
+      localStorage.setItem('userStats', JSON.stringify(userStats));
+      localStorage.setItem(`completed_${currentTest.id}`, 'true');
+      localStorage.removeItem(`draft_${currentTest.id}`);
+
+      // Show result screen
+      document.getElementById('scoreValue').textContent = correct;
+      document.getElementById('totalQuestions').textContent = total;
+      document.getElementById('accuracyPercent').textContent = Math.round((correct / total) * 100);
+      document.getElementById('resultTime').textContent = formatTime(totalTimeUsed);
+      showScreen('resultScreen');
+
+      // Update profile stats
+      updateProfileStats();
+    }
+
+    // ===== UPDATE PROFILE STATS =====
+    function updateProfileStats() {
+      const stats = JSON.parse(localStorage.getItem('userStats')) || userStats;
+      document.getElementById('totalAttempts').textContent = stats.totalAttempts;
+      document.getElementById('correctCount').textContent = stats.correctCount;
+      document.getElementById('wrongCount').textContent = stats.wrongCount;
+      document.getElementById('skippedCount').textContent = stats.skippedCount;
+      document.getElementById('attemptedTests').textContent = stats.attemptedTests;
+      document.getElementById('wrongDays').textContent = calculateDaysSince(stats.lastWrongDate);
+    }
+
+    // ===== FORMAT TIME =====
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}m ${secs}s`;
+    }
+
+    // ===== CALCULATE DAYS SINCE =====
+    function calculateDaysSince(date) {
+      const now = new Date();
+      const diffTime = now - new Date(date);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return `${diffDays} Days`;
+    }
+
+    // ===== RE-ATTEMPT TEST =====
+    function reAttemptTest() {
+      if (!currentTest) return;
+      currentQuestionIndex = 0;
+      userAnswers = Array(currentTest.questions.length).fill(null).map(() => ({ answer: null, locked: false }));
+      showScreen('testScreen');
+      renderQuestion(currentQuestionIndex);
+    }
+
+    // ===== SHOW SCREEN =====
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -840,19 +1148,43 @@
       }
     }
 
-    // For demo, clicking back button goes to home screen
-    document.querySelectorAll('.menu-btn').forEach(btn => {
-      btn.onclick = () => {
-        showScreen('homeScreen');
-      };
-    });
+    // ===== FILTER CATEGORY =====
+    function filterCategory(category) {
+      if (category === 'All') {
+        showAllTests();
+        return;
+      }
 
-    // Clicking profile icon goes to profile
-    document.querySelectorAll('.profile-icon').forEach(icon => {
-      icon.onclick = () => {
-        showScreen('profileScreen');
-      };
-    });
+      const filtered = allTests.filter(t => t.category === category);
+      const container = document.getElementById('featuredTestsList');
+      let html = '';
+
+      filtered.forEach(test => {
+        const difficulty = test.difficulty || 'Medium';
+        html += `
+          <div class="test-item">
+            <div>
+              <div class="test-title">${test.title}</div>
+              <div class="test-details">
+                <span><i class="far fa-clock"></i> ${test.questions?.length || 0} प्रश्न • ${test.duration || 20} मिनट</span>
+                <span class="test-difficulty">${difficulty}</span>
+              </div>
+            </div>
+            <button class="start-test-btn" onclick="startTest('${test.id}')">Start Test</button>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // ===== SHOW ALL TESTS =====
+    function showAllTests() {
+      renderFeaturedTests();
+    }
+
+    // ===== INITIALIZE =====
+    loadAllTests();
   </script>
 </body>
 </html>
