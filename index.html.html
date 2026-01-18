@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Exam-IQ • Mission 2026</title>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #f8fafc;
+      min-height: 100vh;
+      font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
+      color: #1e293b;
+      padding: 0;
+    }
+    .container {
+      max-width: 420px;
+      margin: auto;
+      background: white;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      position: relative;
+    }
+
+    /* ===== TOP APP BAR ===== */
+    .app-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .menu-btn {
+      color: #64748b;
+      font-size: 1.2rem;
+    }
+    .app-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .profile-icon {
+      color: #64748b;
+      font-size: 1.2rem;
+    }
+
+    /* ===== MISSION BANNER ===== */
+    .mission-banner {
+      background: linear-gradient(90deg, #f0f9ff, #e0f2fe);
+      padding: 16px 20px;
+      text-align: center;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .mission-text {
+      font-size: 0.95rem;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    /* ===== SEARCH BAR ===== */
+    .search-container {
+      padding: 16px 20px;
+    }
+    .search {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 1rem;
+      outline: none;
+      background: #ffffff;
+    }
+    .search:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* ===== DAILY TEST CARD ===== */
+    .daily-card {
+      background: #fef3c7;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 20px 20px 0;
+      text-align: center;
+      cursor: pointer;
+    }
+    .daily-icon {
+      font-size: 2.5rem;
+      color: #ea580c;
+      margin: 10px 0;
+    }
+    .daily-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .daily-info {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .daily-btn {
+      background: linear-gradient(90deg, #3b82f6, #2563eb);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+    }
+    .daily-btn:hover {
+      background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    }
+
+    /* ===== QUICK CATEGORIES ===== */
+    .quick-categories {
+      padding: 20px;
+    }
+    .category-chip {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #475569;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .category-chip:hover {
+      background: #e2e8f0;
+    }
+    .category-chip.active {
+      background: #3b82f6;
+      color: white;
+    }
+
+    /* ===== MOTIVATION CARD ===== */
+    .motivation-card {
+      background: #e0f2fe;
+      border-radius: 20px;
+      padding: 16px;
+      margin: 20px 20px 0;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #1e40af;
+      line-height: 1.5;
+    }
+
+    /* ===== CATEGORY FILTER CHIPS (Tests Page) ===== */
+    .filter-chips {
+      display: flex;
+      gap: 10px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .filter-chip {
+      background: #f1f5f9;
+      color: #475569;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-chip:hover {
+      background: #e2e8f0;
+    }
+    .filter-chip.active {
+      background: #3b82f6;
+      color: white;
+    }
+
+    /* ===== FEATURED TESTS ===== */
+    .featured-section {
+      padding: 20px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 15px;
+    }
+    .test-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .test-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .test-details {
+      display: flex;
+      gap: 10px;
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+    .test-difficulty {
+      background: #f1f5f9;
+      color: #64748b;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+    .start-test-btn {
+      background: linear-gradient(90deg, #3b82f6, #2563eb);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      float: right;
+    }
+    .start-test-btn:hover {
+      background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    }
+
+    /* ===== RESULT SCREEN ===== */
+    .result-card {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 20px 0;
+    }
+    .time-info {
+      display: flex;
+      gap: 12px;
+      color: #475569;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+    .score-ring {
+      width: 100px;
+      height: 100px;
+      border: 12px solid #d1fae5;
+      border-top: 12px solid #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 15px auto;
+      position: relative;
+    }
+    .score-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #10b981;
+    }
+    .score-total {
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+    .accuracy-box {
+      background: #e0f2fe;
+      padding: 8px 16px;
+      border-radius: 12px;
+      display: inline-block;
+      margin: 8px 0;
+      font-size: 0.9rem;
+    }
+    .start-test-btn-result {
+      background: linear-gradient(90deg, #3b82f6, #2563eb);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      margin: 15px 0;
+      box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+    }
+    .start-test-btn-result:hover {
+      background: linear-gradient(90deg, #2563eb, #1d4ed8);
+    }
+
+    .performance-snapshot {
+      padding: 20px;
+    }
+    .snapshot-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0;
+      cursor: pointer;
+    }
+    .snapshot-text {
+      font-size: 0.95rem;
+      color: #1e293b;
+    }
+    .snapshot-right {
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+
+    /* ===== PROFILE SCREEN ===== */
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: #f1f5f9;
+      border-radius: 20px;
+      margin: 20px 20px 0;
+    }
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #64748b;
+    }
+    .user-info {
+      flex: 1;
+    }
+    .user-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .user-exam {
+      color: #475569;
+      font-size: 0.9rem;
+    }
+    .user-level {
+      background: #dbeafe;
+      color: #1d4ed8;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 20px 20px 0;
+    }
+    .stat-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .stat-number {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #1e293b;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .section {
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 20px 20px 0;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .section-title-profile {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .section-more {
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+    .section-list {
+      list-style: none;
+    }
+    .section-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+    .section-item:last-child {
+      border-bottom: none;
+    }
+    .section-item-text {
+      font-size: 0.95rem;
+      color: #1e293b;
+    }
+    .section-item-right {
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+
+    .consistency-box {
+      background: #e0f2fe;
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      margin: 20px 20px 0;
+    }
+    .consistency-icon {
+      font-size: 1.5rem;
+      color: #3b82f6;
+      margin-bottom: 10px;
+    }
+    .consistency-text {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .consistency-subtext {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* ===== NAVIGATION BAR ===== */
+    .nav-bar {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      padding: 12px 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      color: #64748b;
+      font-size: 0.8rem;
+      transition: color 0.2s;
+    }
+    .nav-item.active {
+      color: #3b82f6;
+    }
+    .nav-icon {
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+
+    /* ===== SCREENS ===== */
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .container {
+        max-width: 100%;
+        height: 100vh;
+      }
+      .app-name {
+        font-size: 1.1rem;
+      }
+      .daily-title {
+        font-size: 1.1rem;
+      }
+      .score-value {
+        font-size: 2rem;
+      }
+      .user-name {
+        font-size: 1rem;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .stat-number {
+        font-size: 1rem;
+      }
+      .section-title, .section-title-profile {
+        font-size: 1rem;
+      }
+      .consistency-box {
+        padding: 16px;
+      }
+      .consistency-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HOME SCREEN -->
+    <div id="homeScreen" class="screen active">
+      <!-- App Bar -->
+      <div class="app-bar">
+        <button class="menu-btn"><i class="fas fa-bars"></i></button>
+        <div class="app-name">Exam-IQ</div>
+        <button class="profile-icon"><i class="fas fa-user"></i></button>
+      </div>
+
+      <!-- Mission Banner -->
+      <div class="mission-banner">
+        <div class="mission-text">Mission 2026 की तैयारी का विश्वसनीय साथी</div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <input type="text" class="search" placeholder="टेस्ट या कैटेगरी खोजें..." />
+      </div>
+
+      <!-- Daily Test Card -->
+      <div class="daily-card">
+        <div class="daily-icon"><i class="fas fa-sync-alt"></i></div>
+        <div class="daily-title">Daily Test</div>
+        <div class="daily-info">100 प्रश्न • सभी टॉपिक्स से</div>
+        <button class="daily-btn">⚡ शुरू करें</button>
+      </div>
+
+      <!-- Quick Categories -->
+      <div class="quick-categories">
+        <div class="category-chip active">Lucent GK</div>
+        <div class="category-chip">Jharkhand GK</div>
+        <div class="category-chip">Maths</div>
+        <div class="category-chip">Science</div>
+        <div class="category-chip">Polity</div>
+      </div>
+
+      <!-- Motivation Card -->
+      <div class="motivation-card">
+        "एकाग्रता ही सफलता की कुंजी है — आज का टेस्ट आपको Mission 2026 के करीब ले जाएगा!"
+      </div>
+    </div>
+
+    <!-- TESTS SCREEN -->
+    <div id="testsScreen" class="screen">
+      <!-- App Bar -->
+      <div class="app-bar">
+        <button class="menu-btn"><i class="fas fa-arrow-left"></i></button>
+        <div class="app-name">Tests</div>
+        <button class="profile-icon"><i class="fas fa-search"></i></button>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="filter-chips">
+        <div class="filter-chip active">All</div>
+        <div class="filter-chip">GK</div>
+        <div class="filter-chip">Maths</div>
+        <div class="filter-chip">Science</div>
+        <div class="filter-chip">Polity</div>
+        <div class="filter-chip">Geography</div>
+      </div>
+
+      <!-- Featured Tests -->
+      <div class="featured-section">
+        <div class="section-title">Featured Tests</div>
+        <div class="test-item">
+          <div>
+            <div class="test-title">Daily Test</div>
+            <div class="test-details">
+              <span><i class="far fa-clock"></i> 90 प्रश्न • 30 मिनट</span>
+            </div>
+          </div>
+          <button class="start-test-btn">Start Test</button>
+        </div>
+        <div class="test-item">
+          <div>
+            <div class="test-title">Lucent GK - Set 1</div>
+            <div class="test-details">
+              <span><i class="far fa-clock"></i> 20 प्रश्न • 20 मिनट</span>
+              <span class="test-difficulty">Medium</span>
+            </div>
+          </div>
+          <button class="start-test-btn">Start Test</button>
+        </div>
+        <div class="test-item">
+          <div>
+            <div class="test-title">Maths Basic - Set 5</div>
+            <div class="test-details">
+              <span><i class="far fa-clock"></i> 20 प्रश्न • 20 मिनट</span>
+              <span class="test-difficulty">Medium</span>
+            </div>
+          </div>
+          <button class="start-test-btn">Start Test</button>
+        </div>
+        <div class="test-item">
+          <div>
+            <div class="test-title">Jharkhand GK - Set 3</div>
+            <div class="test-details">
+              <span><i class="far fa-clock"></i> 20 प्रश्न • 20 मिनट</span>
+              <span class="test-difficulty">Medium</span>
+            </div>
+          </div>
+          <button class="start-test-btn">Start Test</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="resultScreen" class="screen">
+      <!-- App Bar -->
+      <div class="app-bar">
+        <button class="menu-btn"><i class="fas fa-arrow-left"></i></button>
+        <div class="app-name">Result</div>
+        <button class="profile-icon"><i class="fas fa-share-alt"></i></button>
+      </div>
+
+      <!-- Score Card -->
+      <div class="result-card">
+        <div class="time-info">
+          <span><i class="far fa-clock"></i> समय : 16m 20s</span>
+        </div>
+        <div class="score-ring">
+          <div>
+            <div class="score-value">78</div>
+            <div class="score-total">/ 100</div>
+          </div>
+        </div>
+        <div class="accuracy-box">
+          <i class="fas fa-check-circle"></i> Accuracy: 78%
+        </div>
+        <button class="start-test-btn-result">Start Test</button>
+      </div>
+
+      <!-- Performance Snapshot -->
+      <div class="performance-snapshot">
+        <div class="section-title">Performance Snapshot</div>
+        <div class="snapshot-item">
+          <div class="snapshot-text">Random 50 Questions</div>
+          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="snapshot-item">
+          <div class="snapshot-text">Random 100 Questions</div>
+          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="snapshot-item">
+          <div class="snapshot-text">Wrong Questions Only</div>
+          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="snapshot-item">
+          <div class="snapshot-text">Accuracy < 50% Questions</div>
+          <div class="snapshot-right"><i class="fas fa-chevron-right"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE SCREEN -->
+    <div id="profileScreen" class="screen">
+      <!-- App Bar -->
+      <div class="app-bar">
+        <button class="menu-btn"><i class="fas fa-arrow-left"></i></button>
+        <div class="app-name">Profile</div>
+        <button class="profile-icon"><i class="fas fa-cog"></i></button>
+      </div>
+
+      <!-- User Header -->
+      <div class="user-header">
+        <div class="user-avatar">P</div>
+        <div class="user-info">
+          <div class="user-name">Piyush Bharti</div>
+          <div class="user-exam">Target Exam: JPSC/JSLPS/SSC</div>
+          <div class="user-level">Beginner</div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">354</div>
+          <div class="stat-label">प्रश्न प्रयास</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">78%</div>
+          <div class="stat-label">Correct</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">12</div>
+          <div class="stat-label">Draws</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">93</div>
+          <div class="stat-label">Skipped</div>
+        </div>
+      </div>
+
+      <!-- My Activity -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-profile">My Activity</div>
+          <div class="section-more"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <ul class="section-list">
+          <li class="section-item">
+            <div class="section-item-text">Attempted Tests</div>
+            <div class="section-item-right">42</div>
+          </li>
+          <li class="section-item">
+            <div class="section-item-text">Bookmarked Questions</div>
+            <div class="section-item-right"><i class="fas fa-chevron-right"></i></div>
+          </li>
+          <li class="section-item">
+            <div class="section-item-text">Wrong Questions</div>
+            <div class="section-item-right">18 Days</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Goals & Exam -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-profile">Goals & Exam</div>
+          <div class="section-more"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <ul class="section-list">
+          <li class="section-item">
+            <div class="section-item-text">Selected Exam</div>
+            <div class="section-item-right">JPSC</div>
+          </li>
+          <li class="section-item">
+            <div class="section-item-text">Target Year</div>
+            <div class="section-item-right">2026</div>
+          </li>
+          <li class="section-item">
+            <div class="section-item-text">Daily Practice Goal</div>
+            <div class="section-item-right">
+              <button style="background:#3b82f6; color:white; border:none; padding:4px 12px; border-radius:8px; font-size:0.8rem;">Update Goal</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Consistency Box -->
+      <div class="consistency-box">
+        <div class="consistency-icon"><i class="fas fa-chart-line"></i></div>
+        <div class="consistency-text">Consistency ही</div>
+        <div class="consistency-subtext">सफलता की मुख्य चाबी है!</div>
+      </div>
+
+      <!-- Help / About -->
+      <div class="section">
+        <ul class="section-list">
+          <li class="section-item">
+            <div class="section-item-text">Contact Us</div>
+            <div class="section-item-right"><i class="fas fa-chevron-right"></i></div>
+          </li>
+          <li class="section-item">
+            <div class="section-item-text">Help / FAQ</div>
+            <div class="section-item-right"><i class="fas fa-chevron-right"></i></div>
+          </li>
+          <li class="section-item">
+            <div class="section-item-text">Privacy Policy</div>
+            <div class="section-item-right"><i class="fas fa-chevron-right"></i></div>
+          </li>
+          <li class="section-item">
+            <div class="section-item-text">About Exam-IQ</div>
+            <div class="section-item-right"><i class="fas fa-chevron-right"></i></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <div class="nav-bar">
+      <div class="nav-item active" onclick="showScreen('homeScreen')">
+        <i class="fas fa-home nav-icon"></i>
+        <div>होम</div>
+      </div>
+      <div class="nav-item" onclick="showScreen('testsScreen')">
+        <i class="fas fa-file-alt nav-icon"></i>
+        <div>टेस्ट</div>
+      </div>
+      <div class="nav-item" onclick="showScreen('resultScreen')">
+        <i class="fas fa-chart-line nav-icon"></i>
+        <div>रिजल्ट</div>
+      </div>
+      <div class="nav-item" onclick="showScreen('profileScreen')">
+        <i class="fas fa-user nav-icon"></i>
+        <div>प्रोफाइल</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+
+      // Update nav bar
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      if (id === 'homeScreen') {
+        document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+      } else if (id === 'testsScreen') {
+        document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+      } else if (id === 'resultScreen') {
+        document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+      } else if (id === 'profileScreen') {
+        document.querySelector('.nav-item:nth-child(4)').classList.add('active');
+      }
+    }
+
+    // For demo, clicking back button goes to home screen
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+      btn.onclick = () => {
+        showScreen('homeScreen');
+      };
+    });
+
+    // Clicking profile icon goes to profile
+    document.querySelectorAll('.profile-icon').forEach(icon => {
+      icon.onclick = () => {
+        showScreen('profileScreen');
+      };
+    });
+  </script>
+</body>
+</html>
